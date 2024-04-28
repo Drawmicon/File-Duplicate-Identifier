@@ -14,6 +14,8 @@ imgFileTypes = ['.jpg', '.jpeg', '.png', '.pdf']
 directory = input("Select directory...")
 #/Users/drawmicon/Documents/FanFusion_Comicon
 
+tagFiles = input("Append 'Duplicate' to file names?\n\tEnter true or false")
+tagFilename = True
 
 #regular expression check for valid directory
 regexMatch = re.compile('^((/[a-zA-Z0-9-_]+)+|/)$')
@@ -37,6 +39,8 @@ for d in dirExists:
         exit (1)
 
 print("All directories: ", dirExists)
+
+
 
 #Loop through all files in folders
 for dirIndex in dirExists:
@@ -107,16 +111,28 @@ for idx, x in enumerate(listOfAllImageFiles):
         if testPrints:
             print(idx, x, "\n\t", listOfAllImageFilePaths[idx]) #print index and element name
         duplicates.append(listOfAllImageFilePaths[idx])
-
-
-
-
-
     else:
         seen.append(x)
         seenFilePath.append(listOfAllImageFilePaths[idx])
 
+#WRITE THE ORIGINAL FILE PATHS AND DUPLICATES TO TEXT FILES
 
+ogFilepaths = directory + '/OriginalFilepaths.txt'
+dupFilepathes = directory + '/DuplicateFilepaths.txt'
+
+with open(ogFilepaths, 'w') as fp:
+    for item in listOfAllImageFilePaths:
+        # write each item on a new line
+        fp.write("%s\n" % item)
+    print('Done')
+fp.close()
+
+with open(dupFilepathes, 'w') as fp:
+    for item in duplicates:
+        # write each item on a new line
+        fp.write("%s\n" % item)
+    print('Done')
+fp.close()
 
 
 #RENAME ALL DUPLICATES TO THE NAME OF THE FOLDER WHERE THE ORIGINAL IS
@@ -151,7 +167,10 @@ for d in duplicates:
 
 
 
-    dest = filePathOnly +"/"+ originalFileFolder + "_" + fileNameWithoutExtension + fileExtension
+    if tagFilename:
+        dest = filePathOnly +"/"+ originalFileFolder + "_" + fileNameWithoutExtension + "_Duplicate" + fileExtension
+    else:
+        dest = filePathOnly + "/" + originalFileFolder + "_" + fileNameWithoutExtension  + fileExtension
 
     print ("New file name for duplicate: ",dest)
 

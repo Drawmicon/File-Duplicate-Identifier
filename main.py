@@ -45,7 +45,7 @@ for dirIndex in dirExists:
         contents = os.listdir(dirIndex)
         dirSize = len(contents)
         # Print the contents of the directory
-        print("Total: ",dirSize, " items:\n")
+        print("Total: ",dirSize, " items in folder:\n")
 
         #CHECK number of files in all directories, Exclude all folders/directories as items
         #numOfFiles = 0
@@ -97,37 +97,67 @@ if testPrints:
 
 #******************************************************************
 print ("Duplicates: \n")
-seen = set()
-duplicates = set()
+seen = []
+seenFilePath = []
+duplicates = []
 #Get list of all duplicates by file name and add the file paths of the duplicates to duplicates set
 for idx, x in enumerate(listOfAllImageFiles):
     if x in seen:
 
         if testPrints:
             print(idx, x, "\n\t", listOfAllImageFilePaths[idx]) #print index and element name
-            duplicates.add(listOfAllImageFilePaths[idx])
+        duplicates.append(listOfAllImageFilePaths[idx])
+
+
+
+
+
     else:
-        seen.add(x)
+        seen.append(x)
+        seenFilePath.append(listOfAllImageFilePaths[idx])
 
 
 
 
-
+#RENAME ALL DUPLICATES TO THE NAME OF THE FOLDER WHERE THE ORIGINAL IS
 for d in duplicates:
+
+
     source = d
 
     #file name and path without extension, and the extension separately, e.g. '/path/to/somefile'   ,     '.ext'
     fileNameAndPath, fileExtension = os.path.splitext(d)
 
-    #name of folder file is in e.g. /path/
-    fileFolder = os.path.dirname(d)
     #file path without the file name e.g. my/file/path/
     filePathOnly = os.path.dirname(d)
     #file name only e.g. filename.txt
     fileNameOnly = os.path.basename(d)
 
-    dest = fileFolder, fileExtension
+    #file name without extension
+    fileNameWithoutExtension = os.path.splitext(os.path.basename(fileNameOnly))[0]
 
+    #name of folder file is in e.g. /path/
+    fileFolderOnly = os.path.basename(filePathOnly)
+
+
+    originalSeenIndex = seen.index(fileNameOnly)
+    if testPrints:
+        print("File first found in file path ",seenFilePath[originalSeenIndex])
+
+    originalFileFolder = os.path.basename(os.path.dirname(seenFilePath[originalSeenIndex]))
+
+    if testPrints:
+        print("Original file folder is ", originalFileFolder)
+
+
+
+    dest = filePathOnly +"/"+ originalFileFolder + "_" + fileNameWithoutExtension + fileExtension
+
+    print ("New file name for duplicate: ",dest)
+
+
+
+    #RENAME ALL DUPLICATES FROM SOURCE TO DEST
     try:
         os.rename(source, dest)
         print("Source path renamed to destination path successfully.")
@@ -149,7 +179,6 @@ for d in duplicates:
     # For other errors
     except OSError as error:
         print(error)
-
 
 
 
